@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\DanzaBogota.Application.Dto\DanzaBogota.Application.Dto.csproj" />
+    <ProjectReference Include="..\DanzaBogota.Domain.Entity\DanzaBogota.Domain.Entity.csproj" />
+  </ItemGroup>
+
 </Project>
