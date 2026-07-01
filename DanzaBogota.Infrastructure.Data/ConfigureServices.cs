@@ -1,4 +1,5 @@
 ﻿using DanzaBogota.Domain.Entity.Identities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,25 +17,27 @@ namespace DanzaBogota.Infrastructure.Data
                 options.UseSqlServer(
                     configuration.GetConnectionString("DefaultConnection")));
 
-            //// Configurar Identity
-            //services.AddIdentity<User, Role>(options =>
-            //{
-            //    // Reglas de contraseña
-            //    options.Password.RequireDigit = true;
-            //    options.Password.RequireLowercase = true;
-            //    options.Password.RequireUppercase = true;
-            //    options.Password.RequireNonAlphanumeric = false;
-            //    options.Password.RequiredLength = 8;
+            // Configurar Identity
+            services.AddIdentity<User, Role>(options =>
+            {
+                // Reglas de contraseña
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequiredLength = 8;
 
-            //    // Reglas de usuario
-            //    options.User.RequireUniqueEmail = true;
+                // Reglas de usuario
+                options.User.RequireUniqueEmail = true;
 
-            //    // Bloqueo por intentos fallidos
-            //    options.Lockout.MaxFailedAccessAttempts = 5;
-            //    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
-            //})
-            //.AddEntityFrameworkStores<ApplicationDbContext>()
-            //.AddDefaultTokenProviders();
+                // Bloqueo por intentos fallidos
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+            })
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
+
+            services.AddScoped<DapperContext>();
 
             return services;
         }

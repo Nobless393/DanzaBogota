@@ -43,7 +43,8 @@ namespace DanzaBogota.Infrastructure.Data.Configurations
 
                 entity.HasOne(e => e.User)
                     .WithMany(e => e.Groups)
-                    .HasForeignKey(e => e.UserId);
+                    .HasForeignKey(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Restrict); 
 
                 entity.HasMany(e => e.Participants)
                     .WithOne(e => e.Group)
@@ -96,11 +97,13 @@ namespace DanzaBogota.Infrastructure.Data.Configurations
 
                 entity.HasOne(e => e.Group)
                     .WithMany(e => e.Applications)
-                    .HasForeignKey(e => e.GroupId);
+                    .HasForeignKey(e => e.GroupId)
+                    .OnDelete(DeleteBehavior.Restrict);   // ← cambio aquí
 
                 entity.HasOne(e => e.Event)
                     .WithMany(e => e.Applications)
-                    .HasForeignKey(e => e.EventId);
+                    .HasForeignKey(e => e.EventId)
+                    .OnDelete(DeleteBehavior.Restrict);   // ← cambio aquí
 
                 entity.HasMany(e => e.Participants)
                     .WithOne(e => e.Application)

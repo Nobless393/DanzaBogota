@@ -50,11 +50,13 @@ namespace DanzaBogota.Infrastructure.Data.Configurations
 
                 entity.HasOne(e => e.Community)
                     .WithMany(e => e.Members)
-                    .HasForeignKey(e => e.CommunityId);
+                    .HasForeignKey(e => e.CommunityId)
+                    .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(e => e.User)
                     .WithMany(e => e.CommunityMembers)
-                    .HasForeignKey(e => e.UserId);
+                    .HasForeignKey(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             builder.Entity<ChatMessage>(entity =>
@@ -67,11 +69,13 @@ namespace DanzaBogota.Infrastructure.Data.Configurations
 
                 entity.HasOne(e => e.Community)
                     .WithMany(e => e.ChatMessages)
-                    .HasForeignKey(e => e.CommunityId);
+                    .HasForeignKey(e => e.CommunityId)
+                    .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(e => e.User)
                     .WithMany(e => e.ChatMessages)
-                    .HasForeignKey(e => e.UserId);
+                    .HasForeignKey(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Restrict); 
             });
 
             builder.Entity<Post>(entity =>
@@ -87,11 +91,13 @@ namespace DanzaBogota.Infrastructure.Data.Configurations
 
                 entity.HasOne(e => e.Community)
                     .WithMany(e => e.Posts)
-                    .HasForeignKey(e => e.CommunityId);
+                    .HasForeignKey(e => e.CommunityId)
+                    .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(e => e.User)
                     .WithMany(e => e.Posts)
-                    .HasForeignKey(e => e.UserId);
+                    .HasForeignKey(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Restrict); 
 
                 entity.HasMany(e => e.Comments)
                     .WithOne(e => e.Post)
@@ -108,11 +114,13 @@ namespace DanzaBogota.Infrastructure.Data.Configurations
 
                 entity.HasOne(e => e.Post)
                     .WithMany(e => e.Comments)
-                    .HasForeignKey(e => e.PostId);
+                    .HasForeignKey(e => e.PostId)
+                    .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(e => e.User)
                     .WithMany(e => e.PostComments)
-                    .HasForeignKey(e => e.UserId);
+                    .HasForeignKey(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
         }
     }

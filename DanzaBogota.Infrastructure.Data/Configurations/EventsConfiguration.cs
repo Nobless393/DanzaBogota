@@ -75,7 +75,8 @@ namespace DanzaBogota.Infrastructure.Data.Configurations
 
                 entity.HasOne(e => e.CreatedByUser)
                     .WithMany(e => e.EventsCreated)
-                    .HasForeignKey(e => e.CreatedByUserId);
+                    .HasForeignKey(e => e.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasMany(e => e.Resources)
                     .WithOne(e => e.Event)
