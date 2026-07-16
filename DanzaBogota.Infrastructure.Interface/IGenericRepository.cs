@@ -2,10 +2,10 @@
 {
     public interface IGenericRepository<T> where T : class
     {
-        Task<IEnumerable<T>> GetAllAsync(string tableName);
-        Task<T?> GetByIdAsync(string tableName, int id);
-        Task<int> InsertAsync(string sql, object parameters);
-        Task<int> UpdateAsync(string sql, object parameters);
-        Task<int> DeleteAsync(string tableName, int id);
+        Task<IEnumerable<T>> GetAllAsync();
+        Task<T?> GetByIdAsync(int id);
+        Task AddAsync(T entity);
+        void Update(T entity);
+        void Delete(T entity);
     }
 }

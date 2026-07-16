@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using DanzaBogota.Infrastructure.Interface;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DanzaBogota.Infrastructure.Repository
 {

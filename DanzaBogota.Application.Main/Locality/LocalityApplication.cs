@@ -1,5 +1,6 @@
 ﻿using DanzaBogota.Application.Dto.Locality;
 using DanzaBogota.Application.Interface;
+using DanzaBogota.Infrastructure.Interface;
 
 namespace DanzaBogota.Application.Main.Locality
 {
@@ -15,7 +16,7 @@ namespace DanzaBogota.Application.Main.Locality
         public async Task<IEnumerable<LocalityDto>> GetAllAsync()
         {
             var repository = _unitOfWork.Repository<DanzaBogota.Domain.Entity.Entities.Locality>();
-            var localities = await repository.GetAllAsync("COMMON.Localities");
+            var localities = await repository.GetAllAsync();
 
             return localities.Select(l => new LocalityDto
             {
@@ -27,7 +28,7 @@ namespace DanzaBogota.Application.Main.Locality
         public async Task<LocalityDto?> GetByIdAsync(int id)
         {
             var repository = _unitOfWork.Repository<DanzaBogota.Domain.Entity.Entities.Locality>();
-            var locality = await repository.GetByIdAsync("COMMON.Localities", id);
+            var locality = await repository.GetByIdAsync(id);
 
             if (locality == null)
             {

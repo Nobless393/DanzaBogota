@@ -14,6 +14,7 @@
     <ProjectReference Include="..\DanzaBogota.Application.Dto\DanzaBogota.Application.Dto.csproj" />
     <ProjectReference Include="..\DanzaBogota.Application.Interface\DanzaBogota.Application.Interface.csproj" />
     <ProjectReference Include="..\DanzaBogota.Domain.Interface\DanzaBogota.Domain.Interface.csproj" />
+    <ProjectReference Include="..\DanzaBogota.Infrastructure.Repository\DanzaBogota.Infrastructure.Repository.csproj" />
     <ProjectReference Include="..\DanzaBogota.Transversal.Common\DanzaBogota.Transversal.Common.csproj" />
     <ProjectReference Include="..\DanzaBogota.Transversal.Logging\DanzaBogota.Transversal.Logging.csproj" />
     <ProjectReference Include="..\DanzaBogota.Transversal.Mapper\DanzaBogota.Transversal.Mapper.csproj" />

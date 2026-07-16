@@ -18,11 +18,11 @@ namespace DanzaBogota.Services.WebApi.SwaggerExtensions
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
-                    Type = SecuritySchemeType.ApiKey,
+                    Type = SecuritySchemeType.Http,
                     Scheme = "Bearer",
                     BearerFormat = "JWT",
                     In = ParameterLocation.Header,
-                    Description = "Ingresa el token JWT así: Bearer {tu token}"
+                    Description = "Ingresa solo el token JWT sin escribir Bearer"   
                 });
 
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement

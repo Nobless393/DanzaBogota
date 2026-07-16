@@ -11,16 +11,18 @@ using Microsoft.AspNetCore.Identity;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddInfrastructureDataServices(builder.Configuration);
+builder.Services.AddJwtAuthentication(builder.Configuration);            
 builder.Services.AddTransversalCommonServices();
 builder.Services.AddApplicationMainServices();
 builder.Services.AddInfrastructureRepositoryServices();
-builder.Services.AddJwtAuthentication(builder.Configuration);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwagger();
 
 var app = builder.Build();
+
+app.UseStaticFiles();
 
 // Sembrar roles al iniciar
 using (var scope = app.Services.CreateScope())
@@ -32,6 +34,8 @@ using (var scope = app.Services.CreateScope())
     await IdentitySeeder.SeedRolesAsync(roleManager);
     await UserSeeder.SeedAdminUserAsync(userManager);
     await LocalitySeeder.SeedLocalityAsync(dbContext);
+    await EventTypeSeeder.SeedAsync(dbContext);
+    await CategorySeeder.SeedAsync(dbContext);
 }
 
 if (app.Environment.IsDevelopment())

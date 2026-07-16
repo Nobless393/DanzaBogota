@@ -16,6 +16,7 @@ namespace DanzaBogota.Domain.Entity.Entities
         public int MaxParticipants { get; set; }
         public int MaxParticipantsPerGroup { get; set; }
         public EventStatus Status { get; set; }
+        public bool RequiresRut { get; set; }
         public bool IsActive { get; set; }
 
         // Relaciones

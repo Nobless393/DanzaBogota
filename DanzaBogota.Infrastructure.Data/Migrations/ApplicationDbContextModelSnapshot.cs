@@ -271,6 +271,9 @@ namespace DanzaBogota.Infrastructure.Data.Migrations
                     b.Property<int>("MaxParticipantsPerGroup")
                         .HasColumnType("int");
 
+                    b.Property<bool>("RequiresRut")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
@@ -464,9 +467,15 @@ namespace DanzaBogota.Infrastructure.Data.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<string>("RutUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("SocialMediaUrl")
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)");
+
+                    b.Property<bool>("UseDirectorRut")
+                        .HasColumnType("bit");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");

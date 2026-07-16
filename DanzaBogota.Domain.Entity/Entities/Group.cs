@@ -11,6 +11,8 @@ namespace DanzaBogota.Domain.Entity.Entities
         public string? Phone { get; set; }
         public string? Email { get; set; }
         public string? SocialMediaUrl { get; set; }
+        public string? RutUrl { get; set; }
+        public bool UseDirectorRut { get; set; }
         public bool IsActive { get; set; }
 
         // Relaciones

@@ -18,25 +18,24 @@ namespace DanzaBogota.Infrastructure.Data
                     configuration.GetConnectionString("DefaultConnection")));
 
             // Configurar Identity
-            services.AddIdentity<User, Role>(options =>
+            services.AddIdentityCore<User>(options =>
             {
-                // Reglas de contraseña
                 options.Password.RequireDigit = true;
                 options.Password.RequireLowercase = true;
                 options.Password.RequireUppercase = true;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequiredLength = 8;
 
-                // Reglas de usuario
                 options.User.RequireUniqueEmail = true;
 
-                // Bloqueo por intentos fallidos
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
             })
+            .AddRoles<Role>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
+            services.AddScoped<SignInManager<User>>();
             services.AddScoped<DapperContext>();
 
             return services;

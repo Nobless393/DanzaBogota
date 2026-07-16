@@ -3,18 +3,19 @@ using DanzaBogota.Application.Interface;
 using DanzaBogota.Domain.Entity.Identities;
 using DanzaBogota.Transversal.Common.Jwt;
 using Microsoft.AspNetCore.Identity;
+using IdentityUser = DanzaBogota.Domain.Entity.Identities.User;
 
 namespace DanzaBogota.Application.Main.Auth
 {
     public class AuthApplication : IAuthApplication
     {
-        private readonly UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
         private readonly IJwtService _jwtService;
 
         public AuthApplication(
-            UserManager<User> userManager,
-            SignInManager<User> signInManager,
+            UserManager<IdentityUser> userManager,
+            SignInManager<IdentityUser> signInManager,
             IJwtService jwtService)
         {
             _userManager = userManager;
@@ -35,7 +36,7 @@ namespace DanzaBogota.Application.Main.Auth
                 };
             }
 
-            var user = new User
+            var user = new IdentityUser
             {
                 UserName = registerDto.Email,
                 Email = registerDto.Email,
