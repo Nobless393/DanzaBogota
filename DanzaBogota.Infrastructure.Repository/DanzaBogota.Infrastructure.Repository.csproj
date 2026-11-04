@@ -6,4 +6,16 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.1.79" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.28" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DanzaBogota.Domain.Entity\DanzaBogota.Domain.Entity.csproj" />
+    <ProjectReference Include="..\DanzaBogota.Domain.Interface\DanzaBogota.Domain.Interface.csproj" />
+    <ProjectReference Include="..\DanzaBogota.Infrastructure.Data\DanzaBogota.Infrastructure.Data.csproj" />
+    <ProjectReference Include="..\DanzaBogota.Infrastructure.Interface\DanzaBogota.Infrastructure.Interface.csproj" />
+  </ItemGroup>
+
 </Project>

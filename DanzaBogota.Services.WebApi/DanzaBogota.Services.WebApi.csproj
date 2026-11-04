@@ -4,14 +4,28 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>danzabogota-webapi-9a8c0bbb-c913-4ae1-9be2-0219fc55beb6</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.28" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.28" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.2.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.28">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.4" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
+    <ProjectReference Include="..\DanzaBogota.Application.Interface\DanzaBogota.Application.Interface.csproj" />
+    <ProjectReference Include="..\DanzaBogota.Application.Main\DanzaBogota.Application.Main.csproj" />
+    <ProjectReference Include="..\DanzaBogota.Application.Validator\DanzaBogota.Application.Validator.csproj" />
+    <ProjectReference Include="..\DanzaBogota.Infrastructure.Repository\DanzaBogota.Infrastructure.Repository.csproj" />
+    <ProjectReference Include="..\DanzaBogota.Transversal.Common\DanzaBogota.Transversal.Common.csproj" />
+    <ProjectReference Include="..\DanzaBogota.Transversal.Logging\DanzaBogota.Transversal.Logging.csproj" />
+    <ProjectReference Include="..\DanzaBogota.Transversal.Mapper\DanzaBogota.Transversal.Mapper.csproj" />
   </ItemGroup>
 
 </Project>
