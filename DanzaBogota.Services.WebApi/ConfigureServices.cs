@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -10,6 +10,15 @@ namespace DanzaBogota.Services.WebApi
             this IServiceCollection services,
             IConfiguration configuration)
         {
+            var jwtKey = configuration["Jwt:Key"];
+            if (string.IsNullOrWhiteSpace(jwtKey) || jwtKey.Length < 32)
+            {
+                throw new InvalidOperationException(
+                    "Falta 'Jwt:Key' (mínimo 32 caracteres). Configúrala con: " +
+                    "dotnet user-secrets set \"Jwt:Key\" \"<clave-larga-aleatoria>\" " +
+                    "o con la variable de entorno Jwt__Key.");
+            }
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -26,7 +35,7 @@ namespace DanzaBogota.Services.WebApi
                     ValidIssuer = configuration["Jwt:Issuer"],
                     ValidAudience = configuration["Jwt:Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!))
+                        Encoding.UTF8.GetBytes(jwtKey))
                 };
             });
 

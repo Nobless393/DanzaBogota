@@ -32,7 +32,7 @@ using (var scope = app.Services.CreateScope())
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     // Sembrar roles y usuario administrador
     await IdentitySeeder.SeedRolesAsync(roleManager);
-    await UserSeeder.SeedAdminUserAsync(userManager);
+    await UserSeeder.SeedAdminUserAsync(userManager, app.Configuration);
     await LocalitySeeder.SeedLocalityAsync(dbContext);
     await EventTypeSeeder.SeedAsync(dbContext);
     await CategorySeeder.SeedAsync(dbContext);
