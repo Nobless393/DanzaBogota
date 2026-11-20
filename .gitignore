@@ -361,3 +361,26 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+# ─── Seguridad: secretos y configuración sensible ───────────────────────────
+# Nunca commitear claves reales, connection strings ni tokens
+appsettings.Production.json
+appsettings.Staging.json
+appsettings.Local.json
+**/secrets.json
+**/*.user.json
+
+# .NET User Secrets (se almacenan en AppData/Roaming, no en el repo)
+# El ID del proyecto se guarda en el .csproj — el contenido nunca debe llegar aquí
+# Ruta Windows: %APPDATA%\Microsoft\UserSecrets\<UserSecretsId>\secrets.json
+# Ruta Linux/Mac: ~/.microsoft/usersecrets/<UserSecretsId>/secrets.json
+
+# Variables de entorno locales
+.env
+.env.local
+.env.*.local
+
+# Archivos de certificados
+*.pfx
+*.pem
+*.cer
+*.key
