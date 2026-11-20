@@ -1,4 +1,4 @@
-﻿using DanzaBogota.Application.Dto.Group;
+using DanzaBogota.Application.Dto.Group;
 using DanzaBogota.Application.Interface;
 using DanzaBogota.Infrastructure.Data;
 using DanzaBogota.Transversal.Common.Storage;
@@ -36,6 +36,7 @@ namespace DanzaBogota.Application.Main.Group
                     Email = g.Email,
                     SocialMediaUrl = g.SocialMediaUrl,
                     RutUrl = g.RutUrl,
+                    PhotoUrl = g.PhotoUrl,
                     UseDirectorRut = g.UseDirectorRut,
                     LocalityId = g.LocalityId,
                     LocalityName = g.Locality.Name,
@@ -64,6 +65,7 @@ namespace DanzaBogota.Application.Main.Group
                     Email = g.Email,
                     SocialMediaUrl = g.SocialMediaUrl,
                     RutUrl = g.RutUrl,
+                    PhotoUrl = g.PhotoUrl,
                     UseDirectorRut = g.UseDirectorRut,
                     LocalityId = g.LocalityId,
                     LocalityName = g.Locality.Name,
@@ -95,6 +97,7 @@ namespace DanzaBogota.Application.Main.Group
                 Email = g.Email,
                 SocialMediaUrl = g.SocialMediaUrl,
                 RutUrl = g.RutUrl,
+                PhotoUrl = g.PhotoUrl,
                 UseDirectorRut = g.UseDirectorRut,
                 LocalityId = g.LocalityId,
                 LocalityName = g.Locality.Name,
@@ -167,6 +170,29 @@ namespace DanzaBogota.Application.Main.Group
 
             group.RutUrl = rutUrl;
             group.UseDirectorRut = false;
+            group.LastModified = DateTimeOffset.UtcNow;
+            group.LastModifiedBy = userId.ToString();
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> UploadPhotoAsync(int groupId, int userId, Stream fileStream, string fileName)
+        {
+            var group = await _context.Groups
+                .FirstOrDefaultAsync(g => g.Id == groupId && g.UserId == userId && g.IsActive);
+
+            if (group == null) return false;
+
+            // Borra la foto anterior si existe
+            if (!string.IsNullOrEmpty(group.PhotoUrl))
+            {
+                await _fileStorageService.DeleteFileAsync(group.PhotoUrl);
+            }
+
+            var photoUrl = await _fileStorageService.SaveFileAsync(fileStream, fileName, "photos");
+
+            group.PhotoUrl = photoUrl;
             group.LastModified = DateTimeOffset.UtcNow;
             group.LastModifiedBy = userId.ToString();
 

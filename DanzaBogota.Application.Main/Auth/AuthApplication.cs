@@ -59,8 +59,10 @@ namespace DanzaBogota.Application.Main.Auth
                 };
             }
 
-            // Asignar rol por defecto "Grupo" a todo usuario nuevo
-            await _userManager.AddToRoleAsync(user, "Grupo");
+            // Asignar rol: "Grupo" por defecto, "Gestor" si se solicita explícitamente
+            var allowedRoles = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "Grupo", "Gestor" };
+            var assignedRole = allowedRoles.Contains(registerDto.Role ?? "") ? registerDto.Role! : "Grupo";
+            await _userManager.AddToRoleAsync(user, assignedRole);
 
             var roles = await _userManager.GetRolesAsync(user);
             var token = _jwtService.GenerateToken(user, roles);

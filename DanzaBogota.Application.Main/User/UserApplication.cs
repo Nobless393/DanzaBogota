@@ -57,5 +57,27 @@ namespace DanzaBogota.Application.Main.User
 
             return result;
         }
+
+        public async Task<UserDto?> GetCurrentUserAsync(int userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+
+            if (user == null) return null;
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            return new UserDto
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email!,
+                DocumentType = user.DocumentType,
+                DocumentNumber = user.DocumentNumber,
+                PhoneNumber = user.PhoneNumber,
+                IsActive = user.IsActive,
+                Roles = roles
+            };
+        }
     }
 }
