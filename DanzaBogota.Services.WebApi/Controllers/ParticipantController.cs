@@ -1,7 +1,7 @@
 ﻿using DanzaBogota.Application.Dto.Participant;
 using DanzaBogota.Application.Interface;
+using DanzaBogota.Transversal.Common.Responses;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -24,7 +24,7 @@ namespace DanzaBogota.Services.WebApi.Controllers
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             var result = await _participantApplication.GetByGroupAsync(groupId, userId);
-            return Ok(result);
+            return Ok(ApiResponse<IEnumerable<ParticipantDto>>.Ok(result));
         }
 
         [HttpGet("{id}")]
@@ -35,10 +35,10 @@ namespace DanzaBogota.Services.WebApi.Controllers
 
             if (result == null)
             {
-                return NotFound();
+                return NotFound(ApiResponse<string>.Fail("Participante no encontrado."));
             }
 
-            return Ok(result);
+            return Ok(ApiResponse<ParticipantDto>.Ok(result));
         }
 
         [HttpPost]
@@ -49,10 +49,10 @@ namespace DanzaBogota.Services.WebApi.Controllers
 
             if (result == 0)
             {
-                return BadRequest(new { message = "No tienes permiso para agregar participantes a este grupo." });
+                return BadRequest(ApiResponse<string>.Fail("No tienes permiso para agregar participantes a este grupo."));
             }
 
-            return Ok(new { affected = result });
+            return Ok(ApiResponse<int>.Ok(result, "Participante agregado correctamente."));
         }
 
         [HttpPut]
@@ -63,10 +63,10 @@ namespace DanzaBogota.Services.WebApi.Controllers
 
             if (result == 0)
             {
-                return NotFound();
+                return NotFound(ApiResponse<string>.Fail("Participante no encontrado."));
             }
 
-            return Ok(new { affected = result });
+            return Ok(ApiResponse<int>.Ok(result, "Participante actualizado correctamente."));
         }
 
         [HttpDelete("{id}")]
@@ -77,10 +77,10 @@ namespace DanzaBogota.Services.WebApi.Controllers
 
             if (!result)
             {
-                return NotFound();
+                return NotFound(ApiResponse<string>.Fail("Participante no encontrado."));
             }
 
-            return Ok(new { message = "Participante eliminado correctamente." });
+            return Ok(ApiResponse<string>.Ok("Participante eliminado correctamente."));
         }
     }
 }

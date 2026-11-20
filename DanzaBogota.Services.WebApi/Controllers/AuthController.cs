@@ -1,6 +1,6 @@
 ﻿using DanzaBogota.Application.Dto.Auth;
 using DanzaBogota.Application.Interface;
-using Microsoft.AspNetCore.Http;
+using DanzaBogota.Transversal.Common.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DanzaBogota.Services.WebApi.Controllers
@@ -23,10 +23,10 @@ namespace DanzaBogota.Services.WebApi.Controllers
 
             if (!result.Success)
             {
-                return BadRequest(result);
+                return BadRequest(ApiResponse<string>.Fail(result.ErrorMessage ?? "No fue posible completar el registro."));
             }
 
-            return Ok(result);
+            return Ok(ApiResponse<AuthResponseDto>.Ok(result, "Registro exitoso."));
         }
 
         [HttpPost("login")]
@@ -36,10 +36,10 @@ namespace DanzaBogota.Services.WebApi.Controllers
 
             if (!result.Success)
             {
-                return Unauthorized(result);
+                return Unauthorized(ApiResponse<string>.Fail(result.ErrorMessage ?? "Correo o contraseña incorrectos."));
             }
 
-            return Ok(result);
+            return Ok(ApiResponse<AuthResponseDto>.Ok(result, "Inicio de sesión exitoso."));
         }
     }
 }

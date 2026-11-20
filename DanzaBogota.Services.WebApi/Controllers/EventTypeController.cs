@@ -1,7 +1,7 @@
 ﻿using DanzaBogota.Application.Dto.Event;
 using DanzaBogota.Application.Interface.EventType;
+using DanzaBogota.Transversal.Common.Responses;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DanzaBogota.Services.WebApi.Controllers
@@ -22,7 +22,7 @@ namespace DanzaBogota.Services.WebApi.Controllers
         public async Task<IActionResult> GetAll()
         {
             var result = await _eventTypeApplication.GetAllAsync();
-            return Ok(result);
+            return Ok(ApiResponse<IEnumerable<EventTypeDto>>.Ok(result));
         }
 
         [HttpGet("{id}")]
@@ -33,10 +33,10 @@ namespace DanzaBogota.Services.WebApi.Controllers
 
             if (result == null)
             {
-                return NotFound();
+                return NotFound(ApiResponse<string>.Fail("Tipo de evento no encontrado."));
             }
 
-            return Ok(result);
+            return Ok(ApiResponse<EventTypeDto>.Ok(result));
         }
 
         [HttpPost]
@@ -44,7 +44,7 @@ namespace DanzaBogota.Services.WebApi.Controllers
         public async Task<IActionResult> Create([FromBody] EventTypeDto dto)
         {
             var result = await _eventTypeApplication.CreateAsync(dto);
-            return Ok(new { affected = result });
+            return Ok(ApiResponse<int>.Ok(result, "Tipo de evento creado correctamente."));
         }
 
         [HttpPut]
@@ -55,10 +55,10 @@ namespace DanzaBogota.Services.WebApi.Controllers
 
             if (result == 0)
             {
-                return NotFound();
+                return NotFound(ApiResponse<string>.Fail("Tipo de evento no encontrado."));
             }
 
-            return Ok(new { affected = result });
+            return Ok(ApiResponse<int>.Ok(result, "Tipo de evento actualizado correctamente."));
         }
 
         [HttpDelete("{id}")]
@@ -69,10 +69,10 @@ namespace DanzaBogota.Services.WebApi.Controllers
 
             if (!result)
             {
-                return NotFound();
+                return NotFound(ApiResponse<string>.Fail("Tipo de evento no encontrado."));
             }
 
-            return Ok(new { message = "Tipo de evento eliminado correctamente." });
+            return Ok(ApiResponse<string>.Ok("Tipo de evento eliminado correctamente."));
         }
     }
 }

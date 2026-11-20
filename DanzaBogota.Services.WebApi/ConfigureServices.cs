@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -10,15 +10,6 @@ namespace DanzaBogota.Services.WebApi
             this IServiceCollection services,
             IConfiguration configuration)
         {
-            var jwtKey = configuration["Jwt:Key"];
-            if (string.IsNullOrWhiteSpace(jwtKey) || jwtKey.Length < 32)
-            {
-                throw new InvalidOperationException(
-                    "Falta 'Jwt:Key' (mínimo 32 caracteres). Configúrala con: " +
-                    "dotnet user-secrets set \"Jwt:Key\" \"<clave-larga-aleatoria>\" " +
-                    "o con la variable de entorno Jwt__Key.");
-            }
-
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -35,7 +26,7 @@ namespace DanzaBogota.Services.WebApi
                     ValidIssuer = configuration["Jwt:Issuer"],
                     ValidAudience = configuration["Jwt:Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(jwtKey))
+                        Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!))
                 };
             });
 
@@ -50,6 +41,33 @@ namespace DanzaBogota.Services.WebApi
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "DanzaBogota API v1");
             });
 
+            return app;
+        }
+
+        public static IServiceCollection AddCorsConfiguration(
+            this IServiceCollection services,
+            IConfiguration configuration)
+        {
+            var allowedOrigins = configuration.GetSection("Cors:AllowedOrigins")
+                .Get<string[]>()
+                ?? new[] { "http://localhost:5173", "http://127.0.0.1:5173" };
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("FrontendApp", policy =>
+                {
+                    policy.WithOrigins(allowedOrigins)
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
+
+            return services;
+        }
+
+        public static IApplicationBuilder UseCorsConfiguration(this IApplicationBuilder app)
+        {
+            app.UseCors("FrontendApp");
             return app;
         }
     }

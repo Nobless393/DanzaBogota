@@ -1,5 +1,6 @@
-﻿using DanzaBogota.Application.Dto.Group;
+using DanzaBogota.Application.Dto.Group;
 using DanzaBogota.Application.Interface;
+using DanzaBogota.Transversal.Common.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -22,7 +23,7 @@ namespace DanzaBogota.Services.WebApi.Controllers
         public async Task<IActionResult> GetAll()
         {
             var result = await _groupApplication.GetAllAsync();
-            return Ok(result);
+            return Ok(ApiResponse<IEnumerable<GroupDto>>.Ok(result));
         }
 
         [HttpGet("my-groups")]
@@ -31,7 +32,7 @@ namespace DanzaBogota.Services.WebApi.Controllers
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             var result = await _groupApplication.GetMyGroupsAsync(userId);
-            return Ok(result);
+            return Ok(ApiResponse<IEnumerable<GroupDto>>.Ok(result));
         }
 
         [HttpGet("{id}")]
@@ -42,10 +43,10 @@ namespace DanzaBogota.Services.WebApi.Controllers
 
             if (result == null)
             {
-                return NotFound();
+                return NotFound(ApiResponse<string>.Fail("Grupo no encontrado."));
             }
 
-            return Ok(result);
+            return Ok(ApiResponse<GroupDto>.Ok(result));
         }
 
         [HttpPost]
@@ -54,7 +55,7 @@ namespace DanzaBogota.Services.WebApi.Controllers
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             var result = await _groupApplication.CreateAsync(dto, userId);
-            return Ok(new { affected = result });
+            return Ok(ApiResponse<int>.Ok(result, "Grupo creado correctamente."));
         }
 
         [HttpPut]
@@ -66,10 +67,10 @@ namespace DanzaBogota.Services.WebApi.Controllers
 
             if (result == 0)
             {
-                return NotFound();
+                return NotFound(ApiResponse<string>.Fail("Grupo no encontrado."));
             }
 
-            return Ok(new { affected = result });
+            return Ok(ApiResponse<int>.Ok(result, "Grupo actualizado correctamente."));
         }
 
         [HttpPost("{id}/upload-rut")]
@@ -78,7 +79,7 @@ namespace DanzaBogota.Services.WebApi.Controllers
         {
             if (file == null || file.Length == 0)
             {
-                return BadRequest(new { message = "Debes adjuntar un archivo." });
+                return BadRequest(ApiResponse<string>.Fail("Debes adjuntar un archivo."));
             }
 
             var allowedExtensions = new[] { ".pdf", ".jpg", ".jpeg", ".png" };
@@ -86,7 +87,7 @@ namespace DanzaBogota.Services.WebApi.Controllers
 
             if (!allowedExtensions.Contains(extension))
             {
-                return BadRequest(new { message = "Solo se permiten archivos PDF, JPG o PNG." });
+                return BadRequest(ApiResponse<string>.Fail("Solo se permiten archivos PDF, JPG o PNG."));
             }
 
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -96,10 +97,40 @@ namespace DanzaBogota.Services.WebApi.Controllers
 
             if (!result)
             {
-                return NotFound(new { message = "Grupo no encontrado o no tienes permiso." });
+                return NotFound(ApiResponse<string>.Fail("Grupo no encontrado o no tienes permiso."));
             }
 
-            return Ok(new { message = "RUT subido correctamente." });
+            return Ok(ApiResponse<string>.Ok("RUT subido correctamente."));
+        }
+
+        [HttpPost("{id}/upload-photo")]
+        [Authorize(Roles = "Grupo")]
+        public async Task<IActionResult> UploadPhoto(int id, IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest(ApiResponse<string>.Fail("Debes adjuntar una imagen."));
+            }
+
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+            var extension = Path.GetExtension(file.FileName).ToLower();
+
+            if (!allowedExtensions.Contains(extension))
+            {
+                return BadRequest(ApiResponse<string>.Fail("Solo se permiten imágenes JPG, PNG o WEBP."));
+            }
+
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+            using var stream = file.OpenReadStream();
+            var result = await _groupApplication.UploadPhotoAsync(id, userId, stream, file.FileName);
+
+            if (!result)
+            {
+                return NotFound(ApiResponse<string>.Fail("Grupo no encontrado o no tienes permiso."));
+            }
+
+            return Ok(ApiResponse<string>.Ok("Foto subida correctamente."));
         }
 
         [HttpDelete("{id}")]
@@ -111,10 +142,10 @@ namespace DanzaBogota.Services.WebApi.Controllers
 
             if (!result)
             {
-                return NotFound();
+                return NotFound(ApiResponse<string>.Fail("Grupo no encontrado."));
             }
 
-            return Ok(new { message = "Grupo eliminado correctamente." });
+            return Ok(ApiResponse<string>.Ok("Grupo eliminado correctamente."));
         }
     }
 }
