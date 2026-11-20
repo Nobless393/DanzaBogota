@@ -1,4 +1,6 @@
-﻿using DanzaBogota.Application.Interface;
+﻿using DanzaBogota.Application.Dto.Category;
+using DanzaBogota.Application.Interface;
+using DanzaBogota.Transversal.Common.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,7 +22,7 @@ namespace DanzaBogota.Services.WebApi.Controllers
         public async Task<IActionResult> GetAll()
         {
             var result = await _categoryApplication.GetAllAsync();
-            return Ok(result);
+            return Ok(ApiResponse<IEnumerable<CategoryDto>>.Ok(result));
         }
 
         [HttpGet("{id}")]
@@ -30,10 +32,10 @@ namespace DanzaBogota.Services.WebApi.Controllers
 
             if (result == null)
             {
-                return NotFound();
+                return NotFound(ApiResponse<string>.Fail("Categoría no encontrada."));
             }
 
-            return Ok(result);
+            return Ok(ApiResponse<CategoryDto>.Ok(result));
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using DanzaBogota.Application.Dto.Event;
 using DanzaBogota.Application.Interface;
+using DanzaBogota.Transversal.Common.Responses;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -20,18 +20,26 @@ namespace DanzaBogota.Services.WebApi.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin,Gestor")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] EventQueryParameters query)
         {
-            var result = await _eventApplication.GetAllAsync();
-            return Ok(result);
+            var result = await _eventApplication.GetAllAsync(query);
+            return Ok(ApiResponse<PaginatedResult<EventDto>>.Ok(result));
+        }
+
+        [HttpGet("finished-count")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetFinishedCount()
+        {
+            var result = await _eventApplication.GetFinishedCountAsync();
+            return Ok(ApiResponse<int>.Ok(result));
         }
 
         [HttpGet("published")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetPublished()
+        public async Task<IActionResult> GetPublished([FromQuery] EventQueryParameters query)
         {
-            var result = await _eventApplication.GetPublishedAsync();
-            return Ok(result);
+            var result = await _eventApplication.GetPublishedAsync(query);
+            return Ok(ApiResponse<PaginatedResult<EventDto>>.Ok(result));
         }
 
         [HttpGet("{id}")]
@@ -42,10 +50,10 @@ namespace DanzaBogota.Services.WebApi.Controllers
 
             if (result == null)
             {
-                return NotFound();
+                return NotFound(ApiResponse<string>.Fail("Evento no encontrado."));
             }
 
-            return Ok(result);
+            return Ok(ApiResponse<EventDto>.Ok(result));
         }
 
         [HttpPost]
@@ -54,7 +62,7 @@ namespace DanzaBogota.Services.WebApi.Controllers
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             var result = await _eventApplication.CreateAsync(dto, userId);
-            return Ok(new { affected = result });
+            return Ok(ApiResponse<int>.Ok(result, "Evento creado correctamente."));
         }
 
         [HttpPut]
@@ -65,10 +73,10 @@ namespace DanzaBogota.Services.WebApi.Controllers
 
             if (result == 0)
             {
-                return NotFound();
+                return NotFound(ApiResponse<string>.Fail("Evento no encontrado."));
             }
 
-            return Ok(new { affected = result });
+            return Ok(ApiResponse<int>.Ok(result, "Evento actualizado correctamente."));
         }
 
         [HttpPatch("{id}/publish")]
@@ -79,10 +87,10 @@ namespace DanzaBogota.Services.WebApi.Controllers
 
             if (!result)
             {
-                return BadRequest("No se puede publicar el evento.");
+                return BadRequest(ApiResponse<string>.Fail("No se puede publicar el evento."));
             }
 
-            return Ok(new { message = "Evento publicado correctamente." });
+            return Ok(ApiResponse<string>.Ok("Evento publicado correctamente."));
         }
 
         [HttpPatch("{id}/cancel")]
@@ -93,10 +101,10 @@ namespace DanzaBogota.Services.WebApi.Controllers
 
             if (!result)
             {
-                return BadRequest("No se puede cancelar el evento.");
+                return BadRequest(ApiResponse<string>.Fail("No se puede cancelar el evento."));
             }
 
-            return Ok(new { message = "Evento cancelado correctamente." });
+            return Ok(ApiResponse<string>.Ok("Evento cancelado correctamente."));
         }
 
         [HttpDelete("{id}")]
@@ -107,10 +115,10 @@ namespace DanzaBogota.Services.WebApi.Controllers
 
             if (!result)
             {
-                return NotFound();
+                return NotFound(ApiResponse<string>.Fail("Evento no encontrado."));
             }
 
-            return Ok(new { message = "Evento eliminado correctamente." });
+            return Ok(ApiResponse<string>.Ok("Evento eliminado correctamente."));
         }
     }
 }

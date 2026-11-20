@@ -1,4 +1,4 @@
-﻿namespace DanzaBogota.Application.Dto.Group
+namespace DanzaBogota.Application.Dto.Group
 {
     public class GroupDto
     {
@@ -10,6 +10,7 @@
         public string? Email { get; set; }
         public string? SocialMediaUrl { get; set; }
         public string? RutUrl { get; set; }
+        public string? PhotoUrl { get; set; }
         public bool UseDirectorRut { get; set; }
         public int LocalityId { get; set; }
         public string LocalityName { get; set; }

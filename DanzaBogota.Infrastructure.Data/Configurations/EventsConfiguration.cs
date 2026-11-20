@@ -1,4 +1,4 @@
-﻿using DanzaBogota.Domain.Entity.Entities;
+using DanzaBogota.Domain.Entity.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace DanzaBogota.Infrastructure.Data.Configurations
@@ -107,9 +107,54 @@ namespace DanzaBogota.Infrastructure.Data.Configurations
                 entity.Property(e => e.Notes)
                     .HasMaxLength(255);
 
+                entity.Property(e => e.FileUrl)
+                    .HasMaxLength(500);
+
                 entity.HasOne(e => e.Event)
                     .WithMany(e => e.Resources)
                     .HasForeignKey(e => e.EventId);
+            });
+
+            builder.Entity<EventComment>(entity =>
+            {
+                entity.ToTable("EventComments", DefSchema);
+
+                entity.Property(e => e.Content)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.HasOne(e => e.Event)
+                    .WithMany(e => e.Comments)
+                    .HasForeignKey(e => e.EventId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(e => e.User)
+                    .WithMany()
+                    .HasForeignKey(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.Parent)
+                    .WithMany(e => e.Replies)
+                    .HasForeignKey(e => e.ParentId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            builder.Entity<EventCommentLike>(entity =>
+            {
+                entity.ToTable("EventCommentLikes", DefSchema);
+
+                entity.HasIndex(e => new { e.CommentId, e.UserId })
+                    .IsUnique();
+
+                entity.HasOne(e => e.Comment)
+                    .WithMany(e => e.Likes)
+                    .HasForeignKey(e => e.CommentId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(e => e.User)
+                    .WithMany()
+                    .HasForeignKey(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
         }
     }

@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "backend-api",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--project", "DanzaBogota.Services.WebApi/DanzaBogota.Services.WebApi.csproj", "--urls", "http://localhost:5098"],
+      "port": 5098
+    },
+    {
+      "name": "frontend-dev",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "C:\\Users\\Alexander Castillo\\source\\repos\\Nobless393\\DanzaBogota\\.claude\\run-frontend.cmd"],
+      "port": 5173
+    }
+  ]
+}

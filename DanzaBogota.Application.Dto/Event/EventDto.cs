@@ -1,4 +1,4 @@
-﻿namespace DanzaBogota.Application.Dto.Event
+namespace DanzaBogota.Application.Dto.Event
 {
     public class EventDto
     {
@@ -19,5 +19,17 @@
         public string CreatedByName { get; set; }
         public List<string> EventTypes { get; set; }
         public List<string> Categories { get; set; }
+        public List<int> EventTypeIds { get; set; }
+        public List<int> CategoryIds { get; set; }
+        public List<EventResourceDto> Resources { get; set; } = new();
+    }
+
+    public class EventResourceDto
+    {
+        public int Id { get; set; }
+        public string ResourceType { get; set; }
+        public int Quantity { get; set; }
+        public string? Notes { get; set; }
+        public string? FileUrl { get; set; }
     }
 }

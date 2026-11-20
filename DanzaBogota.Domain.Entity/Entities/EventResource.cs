@@ -1,4 +1,4 @@
-﻿using DanzaBogota.Domain.Entity.Common;
+using DanzaBogota.Domain.Entity.Common;
 
 namespace DanzaBogota.Domain.Entity.Entities
 {
@@ -7,6 +7,7 @@ namespace DanzaBogota.Domain.Entity.Entities
         public string ResourceType { get; set; }
         public int Quantity { get; set; }
         public string? Notes { get; set; }
+        public string? FileUrl { get; set; }
         public DateTimeOffset Created { get; set; }
 
         // Relaciones

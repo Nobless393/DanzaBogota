@@ -1,4 +1,6 @@
-﻿using DanzaBogota.Application.Interface;
+﻿using DanzaBogota.Application.Dto.Locality;
+using DanzaBogota.Application.Interface;
+using DanzaBogota.Transversal.Common.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,7 +22,7 @@ namespace DanzaBogota.Services.WebApi.Controllers
         public async Task<IActionResult> GetAll()
         {
             var result = await _localityApplication.GetAllAsync();
-            return Ok(result);
+            return Ok(ApiResponse<IEnumerable<LocalityDto>>.Ok(result));
         }
 
         [HttpGet("{id}")]
@@ -30,10 +32,10 @@ namespace DanzaBogota.Services.WebApi.Controllers
 
             if (result == null)
             {
-                return NotFound();
+                return NotFound(ApiResponse<string>.Fail("Localidad no encontrada."));
             }
 
-            return Ok(result);
+            return Ok(ApiResponse<LocalityDto>.Ok(result));
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using DanzaBogota.Application.Dto.Inscription;
+using DanzaBogota.Application.Dto.Participant;
 using DanzaBogota.Application.Interface;
 using DanzaBogota.Domain.Entity.Enums;
 using DanzaBogota.Infrastructure.Data;
@@ -65,8 +66,20 @@ namespace DanzaBogota.Application.Main.Inscription
                 return (false, "El evento ha alcanzado el máximo de participantes.");
 
             // 7. Verifica participantes por grupo
-            if (group.Participants.Count > eventEntity.MaxParticipantsPerGroup)
+            var selectedParticipantIds = dto.ParticipantIds?.Distinct().ToList() ?? new List<int>();
+            var participantCount = selectedParticipantIds.Count > 0
+                ? selectedParticipantIds.Count
+                : group.Participants.Count;
+
+            if (participantCount > eventEntity.MaxParticipantsPerGroup)
                 return (false, $"Tu grupo supera el máximo de {eventEntity.MaxParticipantsPerGroup} participantes por grupo.");
+
+            if (selectedParticipantIds.Count > 0)
+            {
+                var validParticipantIds = group.Participants.Select(p => p.Id).ToHashSet();
+                if (selectedParticipantIds.Any(id => !validParticipantIds.Contains(id)))
+                    return (false, "Uno o más participantes seleccionados no pertenecen a tu grupo.");
+            }
 
             // 8. Crea la inscripción
             var inscription = new Domain.Entity.Entities.EventApplication
@@ -80,6 +93,23 @@ namespace DanzaBogota.Application.Main.Inscription
             };
 
             await _context.EventApplications.AddAsync(inscription);
+            await _context.SaveChangesAsync();
+
+            // 9. Asocia los participantes del grupo a la inscripción
+            var participantsToLink = selectedParticipantIds.Count > 0
+                ? group.Participants.Where(p => selectedParticipantIds.Contains(p.Id)).ToList()
+                : group.Participants.ToList();
+
+            foreach (var participant in participantsToLink)
+            {
+                _context.ApplicationParticipants.Add(new Domain.Entity.Entities.ApplicationParticipant
+                {
+                    ApplicationId = inscription.Id,
+                    ParticipantId = participant.Id,
+                    Created = DateTimeOffset.UtcNow
+                });
+            }
+
             await _context.SaveChangesAsync();
 
             return (true, "Inscripción realizada correctamente. Pendiente de aprobación.");
@@ -143,11 +173,6 @@ namespace DanzaBogota.Application.Main.Inscription
             if (inscription == null)
                 return (false, "Inscripción no encontrada o ya fue revisada.");
 
-            // Verifica que el usuario sea el creador del evento
-            var isEventOwner = inscription.Event.CreatedByUserId == userId;
-            var isAdmin = await _context.EventApplications
-                .AnyAsync(a => a.Id == dto.InscriptionId);
-
             inscription.Status = dto.Approved
                 ? ApplicationStatus.Approved
                 : ApplicationStatus.Rejected;
@@ -179,6 +204,103 @@ namespace DanzaBogota.Application.Main.Inscription
 
             await _context.SaveChangesAsync();
             return (true, "Inscripción cancelada correctamente.");
+        }
+
+        public async Task<(bool Success, string Message, IEnumerable<ParticipantDto> Data)> GetParticipantsAsync(
+            int inscriptionId, int userId, bool isAdminOrGestor)
+        {
+            var inscription = await _context.EventApplications
+                .Include(a => a.Group)
+                .Include(a => a.Participants)
+                    .ThenInclude(ap => ap.Participant)
+                .FirstOrDefaultAsync(a => a.Id == inscriptionId);
+
+            if (inscription == null)
+                return (false, "Inscripción no encontrada.", Enumerable.Empty<ParticipantDto>());
+
+            if (!isAdminOrGestor && inscription.Group.UserId != userId)
+                return (false, "No tienes permiso para ver esta inscripción.", Enumerable.Empty<ParticipantDto>());
+
+            var data = inscription.Participants
+                .Select(ap => new ParticipantDto
+                {
+                    Id = ap.Participant.Id,
+                    FirstName = ap.Participant.FirstName,
+                    LastName = ap.Participant.LastName,
+                    DocumentType = ap.Participant.DocumentType,
+                    DocumentNumber = ap.Participant.DocumentNumber,
+                    Age = ap.Participant.Age,
+                    BirthDate = ap.Participant.BirthDate,
+                    GroupId = ap.Participant.GroupId,
+                    GroupName = inscription.Group.Name,
+                    IsActive = ap.Participant.IsActive
+                });
+
+            return (true, string.Empty, data);
+        }
+
+        public async Task<InscriptionStatsDto> GetStatsAsync()
+        {
+            var stats = await _context.EventApplications
+                .GroupBy(_ => _.Status)
+                .Select(g => new { Status = g.Key, Count = g.Count() })
+                .ToListAsync();
+
+            return new InscriptionStatsDto
+            {
+                PendingCount  = stats.FirstOrDefault(s => s.Status == ApplicationStatus.Pending)?.Count  ?? 0,
+                ApprovedCount = stats.FirstOrDefault(s => s.Status == ApplicationStatus.Approved)?.Count ?? 0,
+                RejectedCount = stats.FirstOrDefault(s => s.Status == ApplicationStatus.Rejected)?.Count ?? 0,
+                TotalCount    = stats.Sum(s => s.Count)
+            };
+        }
+
+        public async Task<(bool Success, string Message)> UpdateParticipantsAsync(
+            int inscriptionId, int userId, bool isAdminOrGestor, UpdateInscriptionParticipantsDto dto)
+        {
+            var inscription = await _context.EventApplications
+                .Include(a => a.Group)
+                    .ThenInclude(g => g.Participants.Where(p => p.IsActive))
+                .Include(a => a.Event)
+                .Include(a => a.Participants)
+                .FirstOrDefaultAsync(a => a.Id == inscriptionId);
+
+            if (inscription == null)
+                return (false, "Inscripción no encontrada.");
+
+            if (!isAdminOrGestor && inscription.Group.UserId != userId)
+                return (false, "No tienes permiso para modificar esta inscripción.");
+
+            if (inscription.Status != ApplicationStatus.Pending)
+                return (false, "Solo se pueden modificar los participantes mientras la inscripción esté pendiente.");
+
+            var requestedIds = dto.ParticipantIds.Distinct().ToList();
+
+            if (requestedIds.Count > inscription.Event.MaxParticipantsPerGroup)
+                return (false, $"Máximo de {inscription.Event.MaxParticipantsPerGroup} participantes por grupo.");
+
+            var validParticipantIds = inscription.Group.Participants.Select(p => p.Id).ToHashSet();
+            if (requestedIds.Any(id => !validParticipantIds.Contains(id)))
+                return (false, "Uno o más participantes no pertenecen al grupo.");
+
+            var existing = inscription.Participants.ToList();
+            _context.ApplicationParticipants.RemoveRange(existing);
+
+            foreach (var participantId in requestedIds)
+            {
+                _context.ApplicationParticipants.Add(new Domain.Entity.Entities.ApplicationParticipant
+                {
+                    ApplicationId = inscription.Id,
+                    ParticipantId = participantId,
+                    Created = DateTimeOffset.UtcNow
+                });
+            }
+
+            inscription.LastModified = DateTimeOffset.UtcNow;
+            inscription.LastModifiedBy = userId.ToString();
+
+            await _context.SaveChangesAsync();
+            return (true, "Participantes actualizados correctamente.");
         }
     }
 }

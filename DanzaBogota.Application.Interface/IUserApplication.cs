@@ -6,5 +6,6 @@ namespace DanzaBogota.Application.Interface
     {
         Task<bool> ChangeRoleAsync(ChangeRoleDto dto);
         Task<IEnumerable<UserDto>> GetAllAsync();
+        Task<UserDto?> GetCurrentUserAsync(int userId);
     }
 }

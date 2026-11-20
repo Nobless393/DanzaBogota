@@ -1,4 +1,4 @@
-﻿using DanzaBogota.Application.Dto.Group;
+using DanzaBogota.Application.Dto.Group;
 
 namespace DanzaBogota.Application.Interface
 {
@@ -10,6 +10,7 @@ namespace DanzaBogota.Application.Interface
         Task<int> CreateAsync(CreateGroupDto dto, int userId);
         Task<int> UpdateAsync(UpdateGroupDto dto, int userId);
         Task<bool> UploadRutAsync(int groupId, int userId, Stream fileStream, string fileName);
+        Task<bool> UploadPhotoAsync(int groupId, int userId, Stream fileStream, string fileName);
         Task<bool> DeleteAsync(int id, int userId);
     }
 }

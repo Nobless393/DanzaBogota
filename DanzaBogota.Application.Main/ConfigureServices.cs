@@ -3,6 +3,7 @@ using DanzaBogota.Application.Interface.EventType;
 using DanzaBogota.Application.Main.Auth;
 using DanzaBogota.Application.Main.Category;
 using DanzaBogota.Application.Main.Event;
+using DanzaBogota.Application.Main.EventComment;
 using DanzaBogota.Application.Main.EventType;
 using DanzaBogota.Application.Main.Group;
 using DanzaBogota.Application.Main.Inscription;
@@ -26,6 +27,7 @@ namespace DanzaBogota.Application.Main
             services.AddScoped<IParticipantApplication, ParticipantApplication>();
             services.AddScoped<ICategoryApplication, CategoryApplication>();
             services.AddScoped<IInscriptionApplication, InscriptionApplication>();
+            services.AddScoped<IEventCommentApplication, EventCommentApplication>();
 
             return services;
         }

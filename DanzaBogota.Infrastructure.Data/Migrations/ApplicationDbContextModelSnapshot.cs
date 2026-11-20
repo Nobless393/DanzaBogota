@@ -343,6 +343,78 @@ namespace DanzaBogota.Infrastructure.Data.Migrations
                     b.ToTable("EventApplications", "GROUPS");
                 });
 
+            modelBuilder.Entity("DanzaBogota.Domain.Entity.Entities.EventComment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EventId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LastModified")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("ParentId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("EventComments", "EVENTS");
+                });
+
+            modelBuilder.Entity("DanzaBogota.Domain.Entity.Entities.EventCommentLike", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CommentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("CommentId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("EventCommentLikes", "EVENTS");
+                });
+
             modelBuilder.Entity("DanzaBogota.Domain.Entity.Entities.EventResource", b =>
                 {
                     b.Property<int>("Id")
@@ -356,6 +428,10 @@ namespace DanzaBogota.Infrastructure.Data.Migrations
 
                     b.Property<int>("EventId")
                         .HasColumnType("int");
+
+                    b.Property<string>("FileUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(255)
@@ -467,8 +543,13 @@ namespace DanzaBogota.Infrastructure.Data.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<string>("PhotoUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<string>("RutUrl")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("SocialMediaUrl")
                         .HasMaxLength(300)
@@ -1096,6 +1177,51 @@ namespace DanzaBogota.Infrastructure.Data.Migrations
                     b.Navigation("Group");
                 });
 
+            modelBuilder.Entity("DanzaBogota.Domain.Entity.Entities.EventComment", b =>
+                {
+                    b.HasOne("DanzaBogota.Domain.Entity.Entities.Event", "Event")
+                        .WithMany("Comments")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DanzaBogota.Domain.Entity.Entities.EventComment", "Parent")
+                        .WithMany("Replies")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("DanzaBogota.Domain.Entity.Identities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Event");
+
+                    b.Navigation("Parent");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DanzaBogota.Domain.Entity.Entities.EventCommentLike", b =>
+                {
+                    b.HasOne("DanzaBogota.Domain.Entity.Entities.EventComment", "Comment")
+                        .WithMany("Likes")
+                        .HasForeignKey("CommentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DanzaBogota.Domain.Entity.Identities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Comment");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("DanzaBogota.Domain.Entity.Entities.EventResource", b =>
                 {
                     b.HasOne("DanzaBogota.Domain.Entity.Entities.Event", "Event")
@@ -1286,12 +1412,21 @@ namespace DanzaBogota.Infrastructure.Data.Migrations
                 {
                     b.Navigation("Applications");
 
+                    b.Navigation("Comments");
+
                     b.Navigation("Resources");
                 });
 
             modelBuilder.Entity("DanzaBogota.Domain.Entity.Entities.EventApplication", b =>
                 {
                     b.Navigation("Participants");
+                });
+
+            modelBuilder.Entity("DanzaBogota.Domain.Entity.Entities.EventComment", b =>
+                {
+                    b.Navigation("Likes");
+
+                    b.Navigation("Replies");
                 });
 
             modelBuilder.Entity("DanzaBogota.Domain.Entity.Entities.Group", b =>

@@ -30,5 +30,6 @@ namespace DanzaBogota.Domain.Entity.Entities
         public ICollection<EventType> EventTypes { get; set; }
         public ICollection<Category> Categories { get; set; }
         public ICollection<EventApplication> Applications { get; set; }
+        public ICollection<EventComment> Comments { get; set; }
     }
 }
