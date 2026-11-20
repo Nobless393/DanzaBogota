@@ -1,4 +1,4 @@
-﻿using DanzaBogota.Domain.Entity.Common;
+using DanzaBogota.Domain.Entity.Common;
 using DanzaBogota.Domain.Entity.Identities;
 
 namespace DanzaBogota.Domain.Entity.Entities
@@ -12,6 +12,7 @@ namespace DanzaBogota.Domain.Entity.Entities
         public string? Email { get; set; }
         public string? SocialMediaUrl { get; set; }
         public string? RutUrl { get; set; }
+        public string? PhotoUrl { get; set; }
         public bool UseDirectorRut { get; set; }
         public bool IsActive { get; set; }
 

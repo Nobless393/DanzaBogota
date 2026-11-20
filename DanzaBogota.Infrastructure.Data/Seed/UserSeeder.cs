@@ -1,40 +1,27 @@
-using DanzaBogota.Domain.Entity.Identities;
+﻿using DanzaBogota.Domain.Entity.Identities;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 
 namespace DanzaBogota.Infrastructure.Data.Seed
 {
     public static class UserSeeder
     {
-        /// <summary>
-        /// Crea el usuario administrador inicial a partir de la configuración
-        /// (Seed:AdminEmail y Seed:AdminPassword). Las credenciales nunca se guardan
-        /// en el código: usa dotnet user-secrets o variables de entorno.
-        /// </summary>
-        public static async Task SeedAdminUserAsync(UserManager<User> userManager, IConfiguration configuration)
+        public static async Task SeedAdminUserAsync(UserManager<User> userManager)
         {
-            var adminEmail = configuration["Seed:AdminEmail"];
-            var adminPassword = configuration["Seed:AdminPassword"];
+            const string alexanderAdmin = "Alexc312@hotmail.com";
 
-            if (string.IsNullOrWhiteSpace(adminEmail) || string.IsNullOrWhiteSpace(adminPassword))
-            {
-                // Sin credenciales configuradas no se crea el administrador.
-                return;
-            }
-
-            var existingAdmin = await userManager.FindByEmailAsync(adminEmail);
+            var existingAdmin = await userManager.FindByEmailAsync(alexanderAdmin);
 
             if (existingAdmin == null)
             {
                 var adminUser = new User
                 {
-                    UserName = adminEmail,
-                    Email = adminEmail,
-                    FirstName = "Admin",
-                    LastName = "DanzaBogota",
+                    UserName = alexanderAdmin,
+                    Email = alexanderAdmin,
+                    FirstName = "Alexander",
+                    LastName = "Castllo",
                     DocumentType = "CC",
-                    DocumentNumber = "0000000000",
-                    PhoneNumber = "0000000000",
+                    DocumentNumber = "1234567890",
+                    PhoneNumber = "3227869716",
                     IsActive = true,
                     EmailConfirmed = true,
                     Created = DateTimeOffset.UtcNow,
@@ -43,7 +30,7 @@ namespace DanzaBogota.Infrastructure.Data.Seed
                     LastModifiedBy = "AdminSeeder"
                 };
 
-                var result = await userManager.CreateAsync(adminUser, adminPassword);
+                var result = await userManager.CreateAsync(adminUser, "Admin!123456");
 
                 if (result.Succeeded)
                 {

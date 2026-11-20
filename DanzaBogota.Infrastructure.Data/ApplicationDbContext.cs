@@ -30,6 +30,8 @@ namespace DanzaBogota.Infrastructure.Data
         public DbSet<Participant> Participants { get; set; }
         public DbSet<EventApplication> EventApplications { get; set; }
         public DbSet<ApplicationParticipant> ApplicationParticipants { get; set; }
+        public DbSet<EventComment> EventComments { get; set; }
+        public DbSet<EventCommentLike> EventCommentLikes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -1,4 +1,4 @@
-﻿using DanzaBogota.Domain.Entity.Entities;
+using DanzaBogota.Domain.Entity.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace DanzaBogota.Infrastructure.Data.Configurations
@@ -33,6 +33,12 @@ namespace DanzaBogota.Infrastructure.Data.Configurations
                 entity.Property(e => e.SocialMediaUrl)
                     .HasMaxLength(300);
 
+                entity.Property(e => e.RutUrl)
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.PhotoUrl)
+                    .HasMaxLength(500);
+
                 entity.HasOne(e => e.Locality)
                     .WithMany(e => e.Groups)
                     .HasForeignKey(e => e.LocalityId);
@@ -44,7 +50,7 @@ namespace DanzaBogota.Infrastructure.Data.Configurations
                 entity.HasOne(e => e.User)
                     .WithMany(e => e.Groups)
                     .HasForeignKey(e => e.UserId)
-                    .OnDelete(DeleteBehavior.Restrict); 
+                    .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasMany(e => e.Participants)
                     .WithOne(e => e.Group)
