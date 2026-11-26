@@ -262,7 +262,17 @@ namespace DanzaBogota.Infrastructure.Data.Seed
                 .Include(e => e.Categories)
                 .FirstOrDefaultAsync(e => e.Title == title);
 
-            if (evt != null) return evt;
+            if (evt != null)
+            {
+                // Actualizar fechas para que siempre sean relativas a hoy
+                evt.StartDate = startDate;
+                evt.EndDate = endDate;
+                evt.Status = status;
+                evt.LastModified = DateTimeOffset.UtcNow;
+                evt.LastModifiedBy = "TestDataSeeder";
+                await context.SaveChangesAsync();
+                return evt;
+            }
 
             var selectedTypes = typeNames
                 .Where(eventTypes.ContainsKey)
